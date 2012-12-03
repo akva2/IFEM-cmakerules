@@ -47,6 +47,24 @@ IF (GoTools_VERSION_MAJOR GREATER 2)
       SET(GoTools_LIBRARIES ${GoTools_LIBRARIES} ${Boost_LIBRARIES})
       SET(GoTools_INCLUDE_DIRS ${GoTools_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
   ENDIF(CMAKE_CXX_COMPILER_ID MATCHES GNU)
+
+  # Quirk test: GoTools r10221 changed function signature without bumping
+  IF (GoTools_VERSION_MAJOR EQUAL 4 AND GoTools_VERSION_MINOR EQUAL 0
+                                    AND GoTools_VERSION_PATCH EQUAL 1)
+    INCLUDE(CheckFunctionExists)
+    SET(CMAKE_REQUIRED_FLAGS ${GoTools_CXX_FLAGS})
+    SET(CMAKE_REQUIRED_LIBRARIES ${GoTools_LIBRARIES})
+      SET(CMAKE_REQUIRED_INCLUDES ${GoTools_INCLUDE_DIRS})
+      CHECK_CXX_SOURCE_COMPILES("
+                                 #include <GoTools/geometry/LoopUtils.h>
+                              int main(void)
+                              { 
+                                std::vector<shared_ptr<Go::CurveOnSurface> > loop;
+                                Go::LoopUtils::paramIsCCW(loop, 1.0, 1.0)
+                              }
+                             " GoTools_QUIRK_paramIsCCW)
+    ENDIF (GoTools_VERSION_MAJOR EQUAL 4 AND GoTools_VERSION_MINOR EQUAL 0
+                                         AND GoTools_VERSION_PATCH EQUAL 1)
 ENDIF (GoTools_VERSION_MAJOR GREATER 2)
 
 INCLUDE(FindPackageHandleStandardArgs)
