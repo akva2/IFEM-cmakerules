@@ -32,21 +32,26 @@ STRING(REGEX REPLACE "GO_VERSION_PATCH ([0-9]+)" "\\1" GoTools_VERSION_PATCH "${
 
 IF (GoTools_VERSION_MAJOR GREATER 2)
   INCLUDE(CheckCXXCompilerFlag)
-  IF(CMAKE_CXX_COMPILER_ID MATCHES GNU)
-  # check if compiler supports c++-0x
-    CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" HAVE_0x)
-    IF(HAVE_0x)
-      SET(GoTools_CXX_FLAGS "-std=gnu++0x")
-    ELSE(HAVE_0x)
-      MESSAGE(FATAL_ERROR "A compiler with c++-0x support is needed")
-    ENDIF(HAVE_0x)
-  ELSE(CMAKE_CXX_COMPILER_ID MATCHES GNU)
-      MESSAGE(STATUS "Compiler is non-GNU, assuming GoTools was built with Boost")
-      FIND_PACKAGE(Boost REQUIRED)
-      SET(GoTools_CXX_FLAGS "-DUSE_BOOST=1")
-      SET(GoTools_LIBRARIES ${GoTools_LIBRARIES} ${Boost_LIBRARIES})
-      SET(GoTools_INCLUDE_DIRS ${GoTools_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
-  ENDIF(CMAKE_CXX_COMPILER_ID MATCHES GNU)
+  CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" HAVE_0x)
+  IF(HAVE_0x)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
+    SET(CMAKE_REQUIRED_FLAGS "-std=gnu++0x")
+    CHECK_CXX_SOURCE_COMPILES (
+      "#include <memory>
+      int main(void) {
+        std::shared_ptr<int> bar;
+        }" HAVE_SHARED_PTR_0x)
+  ENDIF(HAVE_0x)
+  IF(NOT HAVE_SHARED_PTR_0x)
+    # C++0x shared_ptr is not supported - check for Boost
+    IF(Boost_FOUND)
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_BOOST=1")
+      SET(GoTools_COMMON_INCLUDE_DIRS
+          ${GoTools_COMMON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+    ELSE(Boost_FOUND)
+        MESSAGE(FATAL_ERROR "Either Boost or a compiler with c++0x support is needed")
+    ENDIF(Boost_FOUND)
+  ENDIF(NOT HAVE_SHARED_PTR_0x)
 
   # Quirk test: GoTools r10221 changed function signature without bumping
   IF (GoTools_VERSION_MAJOR EQUAL 4 AND GoTools_VERSION_MINOR EQUAL 0
