@@ -1,0 +1,13 @@
+Source: ifem-cmakerules
+Priority: extra
+Maintainer: Arne Morten Kvarving <arne.morten.kvarving@sintef.no>
+Build-Depends: debhelper (>= 8.0.0), cmake
+Standards-Version: 3.9.2
+Homepage: <insert the upstream URL, if relevant>
+
+Package: libifem-cmakerules
+Section: devel
+Architecture: all
+Depends: ${misc:Depends}
+Description: IFEM - various common cmake rules
+ This package holds cmake rules shared by all IFEM packages.
