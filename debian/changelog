@@ -1,3 +1,9 @@
+ifem-cmakerules (1.0.8-1~precise) precise; urgency=low
+
+  * Initial release 
+
+ -- Arne Morten Kvarving <arne.morten.kvarving@sintef.no>  Fri, 26 Apr 2013 15:37:33 +0200
+
 ifem-cmakerules (1.0.7-1~precise) precise; urgency=low
 
   * Initial release
