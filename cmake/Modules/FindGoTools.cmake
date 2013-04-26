@@ -44,6 +44,7 @@ IF (GoTools_VERSION_MAJOR GREATER 2)
   ENDIF(HAVE_0x)
   IF(NOT HAVE_SHARED_PTR_0x)
     # C++0x shared_ptr is not supported - check for Boost
+    FIND_PACKAGE(Boost)
     IF(Boost_FOUND)
       SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_BOOST=1")
       SET(GoTools_COMMON_INCLUDE_DIRS
