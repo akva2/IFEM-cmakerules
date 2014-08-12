@@ -3,5 +3,6 @@
 for i in $1/*
 do
   dir=`echo $i | awk -F '/' '{print $NF}' | sed -e 's/Find//g' -e 's/.cmake//g'`
-  install -D -m 644 $i $DESTDIR/@CMAKE_INSTALL_PREFIX@/lib/$dir/${dir}Config.cmake
+  mkdir -p $DESTDIR@CMAKE_INSTALL_PREFIX@/lib/$dir
+  install -m 644 $i $DESTDIR@CMAKE_INSTALL_PREFIX@/lib/$dir/${dir}Config.cmake
 done
